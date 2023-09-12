@@ -1,0 +1,83 @@
+app:
+  version: '@project.version@'
+
+# mail - configure this to enable emails sent when an exception is raised in
+# event processing
+spring:
+  mail:
+    enabled: true
+    host: smtp.corp.netapp.com
+    username: 'hnguyen@netapp.com'
+    password: ENC(*************)
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          port: 25
+          auth: true
+          starttls:
+            enable: false
+            required: false
+        to: 'hnguyen@netapp.com'
+        from: 'hnguyen@netapp.com'
+
+
+serverMonitoring:
+  emailNotificationCooldown: 7200
+
+server:
+  port: 8081
+
+logging.file.name: log/ais.log
+logging.file.max-history: 20
+logging.level.com.thousandeyes: DEBUG
+
+endpoints:
+  webhookControllerRequestMappings:
+    baseMapping: "/"
+    mapping1: "/hooks"
+    mapping2: "/"
+  transmissionRetry:
+    numRetries: 5
+    retryTimeout: 300
+
+  # these are the downstream services that we're sending data to.
+  # one incoming webhook can be sent to multiple downstream services.
+  services:
+    - name: zenoss
+      zenossUsername: 'thousandeyesapi'
+      zenossPassword: ENC(*************)
+      zenossWebhookURL: 'https://zenoss.corp.netapp.com:54321/zport/dmd/evconsole_router'
+      zenossEvClass: '/1000Eyes'
+      zenossEvClassKey: ''
+
+
+teapipoller:
+  general-parameters:
+    runApiPoller: true
+    targetWebhookServerUrl: http://localhost:8081/hooks
+    executionInterval: 60000
+    apiCallBackoffMs: 15000
+    apiMaxRetries: 3
+    apiSocketConnectTimeoutMs: 5000
+    apiSocketReadTimeoutMs: 5000
+    organizationName: 'NetApp'
+    testEndpoint: 'https://api.thousandeyes.com/v6/status.json'
+    apiVersion: 'v6'
+    username: 'ksk@netapp.com'
+    basicAuthToken: ENC(*************)
+    account-group-configuration:
+      include:
+        - Applications
+        - Network
+        - Linux
+  queryAlertEndpoint:
+    doQueryAlertEndpoint: true
+    doMetadataEnrichment: true
+    metadataFields: description,type,url,server,prefix,targetAgentId,domain,sipRegistrar
+  enterpriseAgentClustersChecks:
+    doEnterpriseAgentsClustersCheck: false
+    enterpriseAgentClusterOfflineMinutes: 15
+    enterpriseAgentCheckIntervalMs: 120000
+    agentCacheDataRefreshMs: 360000
