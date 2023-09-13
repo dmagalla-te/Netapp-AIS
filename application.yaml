@@ -22,6 +22,11 @@ spring:
         to: 'hnguyen@netapp.com'
         from: 'hnguyen@netapp.com'
 
+jasypt:
+  encryptor:
+    algorithm: PBEWithMD5AndDES
+    password:  ${JASYPT_ENCRYPTOR_PASSWORD}
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
 
 serverMonitoring:
   emailNotificationCooldown: 7200
